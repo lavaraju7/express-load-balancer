@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+const AlgoForServerSelection = require('./algorithms');
 
 class LoadBalancer {
   constructor() {
@@ -11,6 +12,8 @@ class LoadBalancer {
     this.app = express();
     this.setupMiddleware();
     this.useStickySession = false
+    this.algorithm = 'round-robin'
+    this.serverAlgo = new AlgoForServerSelection()
   }
 
   setupMiddleware() {
@@ -18,9 +21,10 @@ class LoadBalancer {
     this.app.use(cookieParser());
   }
 
-  start(portForLB,useStickySession) {
+  start(portForLB,useStickySession,algorithm='round-robin') {
     this.port = portForLB;
     this.useStickySession = useStickySession
+    this.algorithm = algorithm
     this.app.listen(this.port, () => {
       console.log(`Load balancer is running on http://localhost:${this.port}`);
     });
@@ -31,8 +35,14 @@ class LoadBalancer {
   }
 
   getNextServer() {
-    this.serverIndex = (this.serverIndex + 1) % this.serverArray.length;
-    return this.serverArray[this.serverIndex];
+    if(this.algorithm ==='round-robin'){
+      this.serverIndex = this.serverAlgo.serverFromRoundRobin(this.serverIndex,this.serverArray)
+      return this.serverArray[this.serverIndex]
+    }
+    if(this.algorithm === 'weighted-round-robin'){
+      this.serverIndex = this.serverAlgo.serverFromWeightedRoundRobin(this.serverIndex,this.serverArray)
+      return this.serverArray[this.serverIndex]
+    }
   }
 
   getServerForSession(sessionId) {
