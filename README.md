@@ -14,11 +14,13 @@ Availability: Ensure your application remains accessible even if a server encoun
 Simplified Management: Manage multiple servers from a central point.
 
 Installation
-npm i express-load-balancer
 
+```
+npm i express-load-balancer `#000000`
+```
 
 Usage
-
+```
 const LoadBalancer = require('express-load-balancer')
 const dotenv = require('dotenv');
 dotenv.config();
@@ -37,5 +39,5 @@ loadBalancer.initializedServers([
 loadBalancer.app.use((req, res) => {
   loadBalancer.handle(req, res);
 });
-
+```
 Now run this file or import this file in your express setup file. Bam your load balancer is up and running.
