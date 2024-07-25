@@ -16,7 +16,7 @@ Simplified Management: Manage multiple servers from a central point.
 Installation
 
 ```
-npm i express-load-balancer `#000000`
+npm i express-load-balancer
 ```
 
 Usage
